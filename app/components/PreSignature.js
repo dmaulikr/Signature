@@ -21,7 +21,7 @@ class PreSignature extends React.Component {
     <TouchableHighlight onPress={() => PreSignature.disconnection(navigation)} underlayColor='transparent'>
       <Icon name='sign-out' style={Style.disconnectionButton} size={30} color='#FFFFFF' />
     </TouchableHighlight>
-  })
+  });
 
   /**
    * Constructeur
@@ -39,7 +39,7 @@ class PreSignature extends React.Component {
         this.props.navigation.navigate('Login');
         timer.clearInterval(this.timer);
       }
-    })
+    });
 
     this.state = {
       isSignatureAvailable: false
@@ -58,7 +58,7 @@ class PreSignature extends React.Component {
         { text: 'Annuler', style: 'cancel' },
         { text: 'Déconnexion', onPress: () => navigation.navigate('Login') },
       ],
-      { cancelable: true })
+      { cancelable: true });
   }
 
   /**
@@ -133,8 +133,8 @@ class PreSignature extends React.Component {
                     signatureURI: responseJSON.uri,
                     signatureDescription: responseJSON.description,
                     signatureDocData: JSON.stringify(responseJSON.docData)
-                  })
-                })
+                  });
+                });
               this.setState({ isSignatureAvailable: true });
             } else if (response.status == 204) {
               this.setState({ isSignatureAvailable: false });
@@ -159,7 +159,7 @@ class PreSignature extends React.Component {
         { text: 'Annuler', style: 'cancel' },
         { text: 'Continuer', onPress: () => this.signatureAccept() },
       ],
-      { cancelable: true })
+      { cancelable: true });
   }
 
   /**
@@ -252,7 +252,7 @@ class PreSignature extends React.Component {
 
         // Si la liste des documents est vide on affiche un message
         if (parsedDocData.length == 0) {
-          listDocData.push(<Text key='noDoc' style={Style.noDocument}>Aucun document associé à cette signature.</Text>)
+          listDocData.push(<Text key='noDoc' style={Style.noDocument}>Aucun document associé à cette signature.</Text>);
         }
 
         return (
@@ -293,7 +293,7 @@ class PreSignature extends React.Component {
         <View style={Style.parentContainer}>
           <View style={Style.noSignatureAvailableContainer}>
             <ActivityIndicator animating={true} color='#9E1854' size={100} />
-            <Text style={Style.searchSignatureText}>En attente d'une nouvelle signature...</Text>
+            <Text style={Style.searchSignatureText}>En attente d\'une nouvelle signature...</Text>
           </View>
         </View>
       )

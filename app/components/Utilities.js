@@ -16,7 +16,7 @@ export default class Utilities extends React.Component {
       const value = await AsyncStorage.getItem(item);
       return value;
     } catch (error) {
-      console.error('Impossible de récupérer l\'item :', error);
+      console.error(error);
     }
   }
 
@@ -29,7 +29,7 @@ export default class Utilities extends React.Component {
     try {
       await AsyncStorage.setItem(key, value);
     } catch (error) {
-      console.error('Impossible de stocker l\'item :', error);
+      console.error(error);
     }
   }
 
