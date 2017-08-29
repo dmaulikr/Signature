@@ -11,155 +11,155 @@ import PreSignature from './PreSignature'
 
 class Signature extends React.Component {
 
-    // Barre de navigation
-    static navigationOptions = {
-        title: 'Signature',
+  // Barre de navigation
+  static navigationOptions = {
+    title: 'Signature',
+  }
+
+  /**
+   * Constructeur
+   * @param props 
+   */
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      // Variable pour le débug
+      signatureURI: this.props.navigation.state.params.uri
     }
+  }
 
-    /**
-     * Constructeur
-     * @param props 
-     */
-    constructor(props) {
-        super(props);
+  /**
+   * Sauvegarde l'image
+   */
+  saveSign() {
+    this.refs['Signature'].saveImage();
+  }
 
-        this.state = {
-            // Variable pour le débug
-            signatureURI: this.props.navigation.state.params.uri
-        }
-    }
+  /**
+   * Mise à zéro du contenu de la zone de signature
+   */
+  resetSign() {
+    this.refs['Signature'].resetImage();
+  }
 
-    /**
-     * Sauvegarde l'image
-     */
-    saveSign() {
-        this.refs['Signature'].saveImage();
-    }
+  /**
+   * Button de retour de la signature
+   */
+  cancelSign() {
+    signatureURI = this.state.signatureURI;
+    // On vide le contenu de la signature et on change le status en 1 : "Nouvelle"
+    this.signature(signatureURI, null, 1);
+  }
 
-    /**
-     * Mise à zéro du contenu de la zone de signature
-     */
-    resetSign() {
-        this.refs['Signature'].resetImage();
-    }
+  /**
+   * Événement de sauvegarde l'image (bouton "Envoyer") 
+   * @param result 
+   */
+  onSaveEvent(result) {
+    // On fait un .replace() car pour une raison inconnue des \n viennent se glisser dans la base64
+    var base64 = result.encoded.replace(/\n/g, '');
 
-    /**
-     * Button de retour de la signature
-     */
-    cancelSign() {
-        signatureURI = this.state.signatureURI;
-        // On vide le contenu de la signature et on change le status en 1 : "Nouvelle"
-        this.signature(signatureURI, null, 1);
-    }
+    // On récupère l'URI de la signature
+    signatureURI = this.state.signatureURI;
 
-    /**
-     * Événement de sauvegarde l'image (bouton "Envoyer") 
-     * @param result 
-     */
-    onSaveEvent(result) {
-        // On fait un .replace() car pour une raison inconnue des \n viennent se glisser dans la base64
-        var base64 = result.encoded.replace(/\n/g, '');
+    // 3 : "Terminée"
+    this.signature(signatureURI, base64, 3);
+  }
 
-        // On récupère l'URI de la signature
-        signatureURI = this.state.signatureURI;
-
-        // 3 : "Terminée"
-        this.signature(signatureURI, base64, 3);
-    }
-
-    /**
-     * Permet d'envoyer une signature à l'API
-     * base64 peut être null si l'on annule la mise à jour par exemple
-     * @param {string} signatureURI 
-     * @param {string} base64 
-     * @param {int} statusId 
-     */
-    signature(signatureURI, base64, statusId) {
-        Utilities.getItemFromStorage('token').then((token) => {
-            if (token != null) {
-                fetch(signatureURI, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token
-                    },
-                    body: JSON.stringify({
-                        'data': base64,
-                        'statusId': statusId,
-                    })
-                })
-                    .then((response) => {
-                        // Vérifie si le token est expiré ou non
-                        Utilities.IsTokenExpired();
-
-                        // On redirige vers l'écran de PreSignature 
-                        this.props.navigation.navigate('PreSignature');
-                    })
-                    .catch((error) => {
-                        console.error(error);
-                    });
-            }
+  /**
+   * Permet d'envoyer une signature à l'API
+   * base64 peut être null si l'on annule la mise à jour par exemple
+   * @param {string} signatureURI 
+   * @param {string} base64 
+   * @param {int} statusId 
+   */
+  signature(signatureURI, base64, statusId) {
+    Utilities.getItemFromStorage('token').then((token) => {
+      if (token != null) {
+        fetch(signatureURI, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            'data': base64,
+            'statusId': statusId,
+          })
         })
-    }
+          .then((response) => {
+            // Vérifie si le token est expiré ou non
+            Utilities.IsTokenExpired();
 
-    /**
-     * Permet de définir que le comportement du bouton de retour en arrière quitte l'application au lieu de dépiler
-     */
-    componentDidMount() {
-        Utilities.onBackButtonPressedQuitApp();
-    }
+            // On redirige vers l'écran de PreSignature 
+            this.props.navigation.navigate('PreSignature');
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      }
+    })
+  }
 
-    render() {
-        Immersive.setImmersive(true);
-        return (
-            <View style={Style.flexColumn}>
-                <SignatureCapture
-                    style={Style.signature}
-                    ref='Signature'
-                    onSaveEvent={this.onSaveEvent.bind(this)}
-                    onDragEvent={this.onDragEvent}
-                    saveImageFileInExtStorage={false}
-                    showNativeButtons={false}
-                    showTitleLabel={true}
-                    rotateClockwise={true} />
+  /**
+   * Permet de définir que le comportement du bouton de retour en arrière quitte l'application au lieu de dépiler
+   */
+  componentDidMount() {
+    Utilities.onBackButtonPressedQuitApp();
+  }
 
-                <View style={Style.flexRow}>
-                    <TouchableHighlight style={Style.buttonSignature} underlayColor={Style.touchColor}
-                        onPress={() => { this.saveSign() }} >
-                        <Text style={Style.buttonSignatureText}>Envoyer</Text>
-                    </TouchableHighlight>
+  render() {
+    Immersive.setImmersive(true);
+    return (
+      <View style={Style.flexColumn}>
+        <SignatureCapture
+          style={Style.signature}
+          ref='Signature'
+          onSaveEvent={this.onSaveEvent.bind(this)}
+          onDragEvent={this.onDragEvent}
+          saveImageFileInExtStorage={false}
+          showNativeButtons={false}
+          showTitleLabel={true}
+          rotateClockwise={true} />
 
-                    <TouchableHighlight style={Style.buttonSignature} underlayColor={Style.touchColor}
-                        onPress={() => { this.resetSign() }} >
-                        <Text style={Style.buttonSignatureText}>Effacer</Text>
-                    </TouchableHighlight>
-                </View>
+        <View style={Style.flexRow}>
+          <TouchableHighlight style={Style.buttonSignature} underlayColor={Style.touchColor}
+            onPress={() => { this.saveSign() }} >
+            <Text style={Style.buttonSignatureText}>Envoyer</Text>
+          </TouchableHighlight>
 
-                <View style={Style.flexRow}>
-                    <TouchableHighlight style={Style.buttonSignature} underlayColor={Style.touchColor}
-                        onPress={() => { this.cancelSign() }} >
-                        <Text style={Style.buttonSignatureText}>Retour</Text>
-                    </TouchableHighlight>
-                </View>
-            </View>
-        );
-    }
+          <TouchableHighlight style={Style.buttonSignature} underlayColor={Style.touchColor}
+            onPress={() => { this.resetSign() }} >
+            <Text style={Style.buttonSignatureText}>Effacer</Text>
+          </TouchableHighlight>
+        </View>
+
+        <View style={Style.flexRow}>
+          <TouchableHighlight style={Style.buttonSignature} underlayColor={Style.touchColor}
+            onPress={() => { this.cancelSign() }} >
+            <Text style={Style.buttonSignatureText}>Retour</Text>
+          </TouchableHighlight>
+        </View>
+      </View>
+    );
+  }
 
 }
 
 // Constantes de style de la barre de navigation
 const navigationOptions = {
-    headerStyle: Style.header,
-    headerTitleStyle: Style.headerTitle,
-    headerLeft: null
+  headerStyle: Style.header,
+  headerTitleStyle: Style.headerTitle,
+  headerLeft: null
 }
 
 export default StackNavigator({
-    Signature: {
-        screen: Signature,
-        navigationOptions,
-    },
+  Signature: {
+    screen: Signature,
+    navigationOptions,
+  },
 },
-    {
-        headerMode: 'none'
-    });
+  {
+    headerMode: 'none'
+  });
