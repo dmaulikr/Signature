@@ -18,9 +18,14 @@ class PreSignature extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: 'Signature',
     headerRight:
-    <TouchableHighlight onPress={() => PreSignature.disconnection(navigation)} underlayColor='transparent'>
-      <Icon name='sign-out' style={Style.disconnectionButton} size={30} color='#FFFFFF' />
-    </TouchableHighlight>
+    <View style={Style.flexRow}>
+      <TouchableHighlight onPress={() => PreSignature.userInformations()} underlayColor='transparent'>
+        <Icon name='user-circle-o' style={Style.profileButton} size={30} color='#FFFFFF' />
+      </TouchableHighlight>
+      <TouchableHighlight onPress={() => PreSignature.disconnection(navigation)} underlayColor='transparent'>
+        <Icon name='sign-out' style={Style.disconnectionButton} size={30} color='#FFFFFF' />
+      </TouchableHighlight>
+    </View>
   });
 
   /**
@@ -59,6 +64,17 @@ class PreSignature extends React.Component {
         { text: 'Déconnexion', onPress: () => navigation.navigate('Login') },
       ],
       { cancelable: true });
+  }
+
+  /**
+   * Affiche une pop-up permettant de visualiser les informations utilisateur
+   */
+  static userInformations() {
+    Alert.alert('Informations utilisateur', Utilities.getTokenInfos(),
+    [
+      { text: 'OK', style: 'cancel' }
+    ],
+    { cancelable: true });
   }
 
   /**
@@ -293,7 +309,7 @@ class PreSignature extends React.Component {
         <View style={Style.parentContainer}>
           <View style={Style.noSignatureAvailableContainer}>
             <ActivityIndicator animating={true} color='#9E1854' size={100} />
-            <Text style={Style.searchSignatureText}>En attente d\'une nouvelle signature...</Text>
+            <Text style={Style.searchSignatureText}>En attente d'une nouvelle signature...</Text>
           </View>
         </View>
       )

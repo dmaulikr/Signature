@@ -118,6 +118,11 @@ export default {
     marginBottom: 20
   },
 
+  profileButton: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+
   searchSignatureText: {
     marginTop: 20,
     marginBottom: 20

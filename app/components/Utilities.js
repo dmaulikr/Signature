@@ -58,7 +58,6 @@ export default class Utilities extends React.Component {
           // Le token est expiré, on le renouvelle
           this.getTokenIfExpired();
         }
-
       }
     })
   }
@@ -93,6 +92,29 @@ export default class Utilities extends React.Component {
             console.error(error);
           });
       }).done();
+  }
+
+  /**
+   * Permet de retourner l'identifiant, le nom et la description de l'utilisateur présent dans le token
+   */
+  static getTokenInfos() {
+    this.getItemFromStorage('token').then((token) => {
+      if (token != null) {
+        // Token décodé
+        var decodedToken = jwt_decode(token);
+        console.log(decodedToken);
+      }
+    })
+
+    var userId = JSON.parse(JSON.stringify(decodedToken.sub));
+    var userName = JSON.parse(JSON.stringify(decodedToken.name));
+    var userDescription = JSON.parse(JSON.stringify(decodedToken.description));
+
+    return (
+      'Identifiant : '+userId+ '\n'+
+      'Nom d\'utilisateur : '+userName+ '\n'+
+      'Description : '+userDescription
+    );
   }
 
 }
